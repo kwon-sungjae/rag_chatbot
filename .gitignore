@@ -1,0 +1,13 @@
+# .gitignore
+venv/
+__pycache__/
+*.pyc
+.env
+.ipynb_checkpoints/
+.DS_Store
+*.log
+*.sqlite3
+*.db
+*.tar
+*.zip
+*.gz
