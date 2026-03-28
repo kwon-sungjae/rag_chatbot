@@ -30,8 +30,8 @@ with tab1:
             # 2. 질문 임베딩 생성
             question_vec = embed_query(question)
 
-        st.markdown("### 🔢 질문 임베딩 (샘플)")
-        st.code(str(question_vec[:10]) + " ...")  # 앞부분 10개만 출력
+        # st.markdown("### 🔢 질문 임베딩 (샘플)")
+        # st.code(str(question_vec[:10]) + " ...")  # 앞부분 10개만 출력
 
         with st.spinner("문서 검색 중..."):
             # 3. 유사 문서 검색
@@ -43,8 +43,8 @@ with tab1:
             # ==========================
             st.markdown("### 📄 검색된 문서 (Top-3)")
             for i, doc in enumerate(docs, 1):
-                st.write(f"**문서 {i}**")
-                st.write("내용:", doc[:300] + "...")
+                st.write(f"**문서 {i} (score: {doc['score']:.4f})**")
+                st.write("내용:", doc["content"][:300] + "...")
                 st.divider()
 
             # ==========================
@@ -52,7 +52,7 @@ with tab1:
             # ==========================
             with st.spinner("응답 생성 중..."):
                 # generate_answer 함수는 그대로 사용
-                answer = generate_answer(question, docs)
+                answer = generate_answer(question, [doc["content"] for doc in docs])
 
             # 프롬프트 출력 부분은 제거하거나 주석 처리
             # st.markdown("### 🧩 LLM 입력 프롬프트")
@@ -74,7 +74,7 @@ with tab2:
     st.subheader("📊 Elasticsearch 대시보드")
 
     # 탭2를 다시 세분화 (매핑 / 문서 확인)
-    dash_tab1, dash_tab2 = st.tabs(["🗂 인덱스 매핑", "📄 문서 데이터"])
+    dash_tab1, dash_tab2, dash_tab3 = st.tabs(["🗂 인덱스 매핑", "📄 문서 데이터", "📈 인덱스 상태"])
 
     # ==========================
     # 1️⃣ 인덱스 매핑 확인
@@ -108,3 +108,30 @@ with tab2:
                 st.info("현재 인덱스에 문서가 없습니다.")
         except Exception as e:
             st.error(f"문서 조회 중 오류 발생: {e}")
+
+    # ==========================
+    # 3️⃣ 인덱스 상태 확인
+    # ==========================
+    with dash_tab3:
+        try:
+            # 클러스터 기본 정보
+            info = es.info()
+            st.markdown("### 🖥️ 클러스터 정보")
+            st.json(info)
+
+            # 인덱스 health
+            health = es.cluster.health(index=INDEX_NAME)
+            st.markdown("### 🟢 인덱스 Health")
+            st.json(health)
+
+            # 인덱스 stats
+            stats = es.indices.stats(index=INDEX_NAME)
+            st.markdown("### 📊 인덱스 통계")
+            st.write("**문서 개수:**", stats["indices"][INDEX_NAME]["primaries"]["docs"]["count"])
+            st.write("**스토어 크기:**", stats["indices"][INDEX_NAME]["total"]["store"]["size_in_bytes"], "bytes")
+
+            # 상세 통계도 출력 가능
+            with st.expander("🔎 상세 인덱스 통계 보기"):
+                st.json(stats["indices"][INDEX_NAME]["primaries"])
+        except Exception as e:
+            st.error(f"상태 조회 중 오류 발생: {e}") 

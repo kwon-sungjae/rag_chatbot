@@ -33,6 +33,9 @@ def search_documents(query_vector, k=3):
 
     documents = []
     for hit in response['hits']['hits']:
-        documents.append(hit['_source']['content'])
+        documents.append({
+            "content": hit['_source']['content'],
+            "score": hit['_score']
+        })
 
     return documents
