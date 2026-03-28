@@ -10,7 +10,7 @@ click==8.2.1
 colorama==0.4.6
 distro==1.9.0
 elastic-transport==8.17.1
-elasticsearch==9.0.2
+elasticsearch==8.19.3
 filelock==3.18.0
 fsspec==2025.7.0
 gitdb==4.0.12
@@ -62,8 +62,9 @@ tenacity==9.1.2
 threadpoolctl==3.6.0
 tokenizers==0.21.4
 toml==0.10.2
-torch==2.7.1+cpu
+# torch는 아래 명령으로 별도 설치: pip install torch --index-url https://download.pytorch.org/whl/cpu
 tornado==6.5.1
+tqdm==4.67.1
 transformers==4.54.1
 typing-inspection==0.4.1
 typing_extensions==4.14.1
