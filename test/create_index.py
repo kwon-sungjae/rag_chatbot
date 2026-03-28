@@ -36,6 +36,6 @@ mapping = {
     }
 }
 
-es.indices.create(index=INDEX_NAME, body=mapping)
+es.indices.create(index=INDEX_NAME, mappings=mapping["mappings"])
 
 print(f"Elasticsearch index '{INDEX_NAME}' created with dense_vector mapping.")
